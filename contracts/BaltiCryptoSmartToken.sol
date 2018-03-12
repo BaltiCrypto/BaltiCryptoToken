@@ -93,7 +93,7 @@ contract RewardToken is ERC20Interface
 	}
 }
 
-contract TestToken is RewardToken //change constructor name when changing this name
+contract BaltiCryptoSmartToken is RewardToken
 {
 	string public name;
 	string public symbol;
@@ -103,7 +103,7 @@ contract TestToken is RewardToken //change constructor name when changing this n
 
 	event Burn(address indexed from, uint256 value);
 
-	function TestToken(string tokenName, string tokenSymbol, uint8 _decimals, uint _totalSupplyinEther, address _tokenStorage)
+	function BaltiCryptoSmartToken(string tokenName, string tokenSymbol, uint8 _decimals, uint _totalSupplyinEther, address _tokenStorage)
 	{
 		name = tokenName;
 		symbol = tokenSymbol;
