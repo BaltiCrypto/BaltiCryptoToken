@@ -8,8 +8,8 @@ contract ERC20Interface
 	function transferFrom(address _from, address _to, uint _value) public returns (bool success) {}
 	function approve(address _spender, uint _value) public returns (bool success) {}
 	function allowance(address _owner, address _spender) public view returns (uint remaining) {}
-	event Transfer(address indexed _from, address indexed _to, uint _value);
-	event Approval(address indexed _owner, address indexed _spender, uint _value);  
+	event LogTransfer(address indexed _from, address indexed _to, uint _value);
+	event LogApproval(address indexed _owner, address indexed _spender, uint _value);  
 }
 
 contract RewardToken is ERC20Interface
@@ -25,7 +25,7 @@ contract RewardToken is ERC20Interface
 	uint public totalSupply;
 	uint totalDividendPoints;
 
-	event RewardAdded(address sender, uint );
+	event LogRewardAdded(address sender, uint );
 
 	function dividendsOwing(address account) internal view returns(uint)
 	{
@@ -48,7 +48,7 @@ contract RewardToken is ERC20Interface
 	function disburse() internal
 	{
 		totalDividendPoints += msg.value;
-		RewardAdded(msg.sender, msg.value);
+		LogRewardAdded(msg.sender, msg.value);
 	}
 
 	function _transfer(address _from, address _to, uint _value) updateAccount(_to) updateAccount(msg.sender) internal returns (bool success)
@@ -58,7 +58,7 @@ contract RewardToken is ERC20Interface
 		require(balances[_to].balance + _value > balances[_to].balance);
 		balances[_from].balance -= _value;
 		balances[_to].balance += _value;
-		Transfer(_from, _to, _value);
+		LogTransfer(_from, _to, _value);
 	}
 
 	function transfer(address _to, uint _value) public returns (bool success)
@@ -83,7 +83,7 @@ contract RewardToken is ERC20Interface
 	function approve(address _spender, uint _value) public returns (bool success)
 	{
 		allowed[msg.sender][_spender] = _value;
-		Approval(msg.sender, _spender, _value);
+		LogApproval(msg.sender, _spender, _value);
 		return true;
 	}
 
@@ -101,15 +101,15 @@ contract BaltiCryptoSmartToken is RewardToken
 	address public tokenStorage;
 	address public creator;
 
-	event Burn(address indexed from, uint256 value);
+	event LogBurn(address indexed from, uint256 value);
 
 	function BaltiCryptoSmartToken(string tokenName, string tokenSymbol, uint8 _decimals, uint _totalSupplyinEther, address _tokenStorage)
 	{
 		name = tokenName;
 		symbol = tokenSymbol;
 		decimals = _decimals;
-		balances[_tokenStorage].balance = _totalSupplyinEther * 10 ** uint(18);
 		totalSupply = _totalSupplyinEther * 10 ** uint(18);
+		balances[_tokenStorage].balance = totalSupply;
 		tokenStorage = _tokenStorage;
 		creator = msg.sender;
 	}
@@ -139,7 +139,7 @@ contract BaltiCryptoSmartToken is RewardToken
 		require(balances[msg.sender].balance >= _value);
 		balances[msg.sender].balance -= _value;
 		totalSupply -= _value;
-		Burn(msg.sender, _value);
+		LogBurn(msg.sender, _value);
 		return true;
 	}
 }
